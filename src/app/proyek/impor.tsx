@@ -59,7 +59,7 @@ export default function ImporProyek() {
       <Card tone={c.pastelBlue} style={{ gap: space.sm }}>
         <T variant="heading">Impor dari Google Sheets atau Excel</T>
         <T variant="small" color={c.text}>
-          1. Isi sheet dengan kolom: Nama, Klien, Jenis, Tahapan, Shooting, Deadline, Link, Catatan. Hanya Nama yang wajib.
+          1. Isi sheet dengan kolom: Nama, Klien, No HP, Jenis, Tahapan, Shooting, Jam, Lokasi, Deadline, Link, Catatan. Hanya Nama yang wajib.
         </T>
         <T variant="small" color={c.text}>
           2. Google Sheets: File {'>'} Download {'>'} CSV. Excel: Save As {'>'} CSV.

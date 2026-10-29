@@ -24,3 +24,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+type UserLike = { email?: string; phone?: string; user_metadata?: Record<string, any> } | null | undefined;
+
+// Nama tampil: dari profil, akun Google, email, atau no HP
+export function displayName(user: UserLike) {
+  const m = user?.user_metadata ?? {};
+  return m.full_name || m.name || user?.email?.split('@')[0] || (user?.phone ? `+${user.phone}` : '') || '';
+}
+
+export function avatarOf(user: UserLike): string | null {
+  const m = user?.user_metadata ?? {};
+  return m.avatar_url || m.picture || null;
+}

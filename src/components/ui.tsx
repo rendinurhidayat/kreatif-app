@@ -3,6 +3,7 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import { createElement, useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -392,7 +393,17 @@ export function IconButton({
   );
 }
 
-export function Avatar({ name, onPress, size = 44 }: { name: string; onPress?: () => void; size?: number }) {
+export function Avatar({
+  name,
+  uri,
+  onPress,
+  size = 44,
+}: {
+  name: string;
+  uri?: string | null;
+  onPress?: () => void;
+  size?: number;
+}) {
   const c = useColors();
   const initials =
     name
@@ -411,9 +422,14 @@ export function Avatar({ name, onPress, size = 44 }: { name: string; onPress?: (
           backgroundColor: c.indigo,
           alignItems: 'center',
           justifyContent: 'center',
+          overflow: 'hidden',
         }}
       >
-        <Text style={{ color: '#FFFFFF', fontFamily: fonts.numBold, fontSize: size * 0.38 }}>{initials}</Text>
+        {uri ? (
+          <Image source={{ uri }} style={{ width: size, height: size }} />
+        ) : (
+          <Text style={{ color: '#FFFFFF', fontFamily: fonts.numBold, fontSize: size * 0.38 }}>{initials}</Text>
+        )}
       </View>
     </Pressable>
   );
@@ -580,6 +596,126 @@ export function DateField({
   );
 }
 
+// Pemilih jam (HH:MM). value '' berarti kosong.
+export function TimeField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (hhmm: string) => void;
+}) {
+  const s = useStyles();
+  const c = useColors();
+  const dark = useIsDark();
+  const [open, setOpen] = useState(false);
+  const [h, m] = (value || '09:00').split(':').map(Number);
+  const current = new Date(2000, 0, 1, h, m);
+  const toHhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+  function press() {
+    tap();
+    if (Platform.OS === 'web') return;
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: current,
+        mode: 'time',
+        is24Hour: true,
+        onChange: (e, d) => e.type === 'set' && d && onChange(toHhmm(d)),
+      });
+    } else {
+      if (!value) onChange(toHhmm(current));
+      setOpen(!open);
+    }
+  }
+
+  return (
+    <View style={{ gap: space.xs, flex: 1 }}>
+      <T variant="label">{label}</T>
+      <Pressable onPress={press} style={[s.input, open && { borderColor: c.accent }]}>
+        <Row>
+          <Ionicons name="time-outline" size={18} color={value ? c.accent : c.muted} />
+          <T color={value ? c.text : c.muted}>{value ? value.replace(':', '.') : 'Jam'}</T>
+          {value !== '' && (
+            <Pressable
+              onPress={() => {
+                onChange('');
+                setOpen(false);
+              }}
+              hitSlop={10}
+              style={{ marginLeft: 'auto' }}
+            >
+              <Ionicons name="close-circle" size={18} color={c.muted} />
+            </Pressable>
+          )}
+        </Row>
+        {Platform.OS === 'web' &&
+          createElement('input', {
+            type: 'time',
+            value,
+            onChange: (e: { target: { value: string } }) => onChange(e.target.value),
+            style: { position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, fontSize: 16, cursor: 'pointer' },
+          })}
+      </Pressable>
+      {open && Platform.OS === 'ios' && (
+        <DateTimePicker
+          value={current}
+          mode="time"
+          display="spinner"
+          is24Hour
+          locale="id-ID"
+          themeVariant={dark ? 'dark' : 'light'}
+          onChange={(_, d) => d && onChange(toHhmm(d))}
+        />
+      )}
+    </View>
+  );
+}
+
+// Kelompok isian dalam form, dengan ikon dan judul
+export function FormSection({
+  icon,
+  title,
+  hint,
+  children,
+}: {
+  icon: IconName;
+  title: string;
+  hint?: string;
+  children: ReactNode;
+}) {
+  const c = useColors();
+  return (
+    <Animated.View
+      entering={FadeInDown.duration(300)}
+      style={{ borderWidth: 1, borderColor: c.border, borderRadius: radius.lg, padding: space.lg, gap: space.md }}
+    >
+      <Row>
+        <View
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 10,
+            backgroundColor: c.pastelIndigo,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Ionicons name={icon} size={17} color={c.indigo} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <T variant="heading" style={{ fontSize: 16 }}>
+            {title}
+          </T>
+          {hint ? <T variant="small">{hint}</T> : null}
+        </View>
+      </Row>
+      {children}
+    </Animated.View>
+  );
+}
+
 export function Segmented<V extends string>({
   value,
   options,
@@ -661,6 +797,7 @@ export function ListItem({
   iconBg,
   onPress,
   dim,
+  leading,
 }: {
   title: string;
   subtitle?: string | null;
@@ -672,6 +809,7 @@ export function ListItem({
   iconBg?: string;
   onPress?: () => void;
   dim?: boolean;
+  leading?: ReactNode;
 }) {
   const s = useStyles();
   const c = useColors();
@@ -681,7 +819,8 @@ export function ListItem({
       disabled={!onPress}
       style={({ pressed }) => [s.listItem, pressed && { opacity: 0.6 }, dim && { opacity: 0.45 }]}
     >
-      {icon && (
+      {leading}
+      {icon && !leading && (
         <View style={[s.listIcon, iconBg ? { backgroundColor: iconBg } : null]}>
           <Ionicons name={icon} size={18} color={iconColor ?? c.text} />
         </View>

@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { Platform, Pressable, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { BrandSplash } from '../components/brand';
 import { AuthProvider } from '../lib/auth';
 import { DialogHost } from '../lib/dialog';
 import { fonts, useColors, useIsDark } from '../lib/theme';
@@ -26,7 +27,7 @@ export default function RootLayout() {
     if (loaded) SplashScreen.hideAsync().catch(() => {});
   }, [loaded]);
 
-  if (!loaded) return null;
+  if (!loaded) return <BrandSplash />;
 
   const base = dark ? DarkTheme : DefaultTheme;
   const theme = {
@@ -91,8 +92,8 @@ export default function RootLayout() {
             <Stack.Screen name="hutang/index" options={{ ...push, title: 'Hutang dan piutang' }} />
             <Stack.Screen name="hutang/form" options={sheet} />
             <Stack.Screen name="laporan" options={{ ...push, title: 'Laporan' }} />
-            <Stack.Screen name="proyek/form" options={{ ...modal, title: 'Proyek' }} />
-            <Stack.Screen name="proyek/impor" options={{ ...modal, title: 'Impor proyek' }} />
+            <Stack.Screen name="proyek/form" options={{ ...modal, title: 'Job' }} />
+            <Stack.Screen name="proyek/impor" options={{ ...modal, title: 'Impor job' }} />
             <Stack.Screen name="proyek/[id]" options={{ ...push, title: '' }} />
             <Stack.Screen name="proyek/tugas" options={sheet} />
             <Stack.Screen name="tim" options={{ ...push, title: 'Tim' }} />

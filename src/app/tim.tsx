@@ -2,7 +2,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 
-import { Button, Card, ErrorText, Field, Form, ListItem, Section, T } from '../components/ui';
+import { Avatar, Button, Card, ErrorText, Field, Form, ListItem, Section, T } from '../components/ui';
 import { useAuth } from '../lib/auth';
 import { success } from '../lib/haptic';
 import { getMyTeam, loadMembers, type Member, type Team } from '../lib/proyek';
@@ -95,7 +95,7 @@ export default function Tim() {
         return (
           <ListItem
             key={m.user_id}
-            icon="person-outline"
+            leading={<Avatar name={m.full_name || '?'} uri={m.avatar_url} size={36} />}
             title={`${m.full_name || 'Tanpa nama'}${m.user_id === me ? ' (kamu)' : ''}`}
             subtitle={m.user_id === team.owner_id ? 'Pemilik' : 'Anggota'}
             right={canRemove ? (m.user_id === me ? 'Keluar' : 'Keluarkan') : undefined}

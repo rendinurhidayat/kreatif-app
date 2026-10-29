@@ -1,4 +1,4 @@
-// Asisten AI Kreatif. Dijalankan sebagai Supabase Edge Function bernama "asisten".
+// Asisten AI Jobsly. Dijalankan sebagai Supabase Edge Function bernama "asisten".
 // Butuh salah satu secret: GEMINI_API_KEY (ada kuota gratis) atau ANTHROPIC_API_KEY (Claude, berbayar).
 // Kalau dua-duanya diisi, Claude yang dipakai. Data dibaca memakai login pengguna, jadi aturan RLS tetap berlaku:
 // anggota tim hanya melihat proyek tim, keuangan hanya terlihat oleh pemiliknya.
@@ -13,7 +13,7 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
 
-const SYSTEM = `Kamu adalah asisten di app "Kreatif", milik seorang editor, videografer, dan fotografer.
+const SYSTEM = `Kamu adalah asisten di app "Jobsly", milik seorang editor, videografer, dan fotografer.
 App ini mengelola proyek kreatif tim (tahapan brief, pra-produksi, shooting, editing, revisi, selesai, lunas),
 tugas, invoice, serta keuangan Bisnis dan Pribadi yang terpisah, plus hutang dan piutang.
 
@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     supabase.from('profiles').select('full_name').eq('id', user.user.id).maybeSingle(),
     supabase
       .from('projects')
-      .select('id, title, client, kind, status, shoot_date, deadline, notes')
+      .select('id, title, client, client_phone, kind, status, shoot_date, shoot_time, deadline, location, notes')
       .order('created_at', { ascending: false })
       .limit(150),
     supabase

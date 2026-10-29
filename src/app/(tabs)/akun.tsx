@@ -1,9 +1,11 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Switch, View } from 'react-native';
+import { ActivityIndicator, Pressable, Switch, View } from 'react-native';
 
 import { Avatar, Card, ListItem, Page, Row, T } from '../../components/ui';
-import { useAuth } from '../../lib/auth';
+import { avatarOf, displayName, useAuth } from '../../lib/auth';
+import { changeAvatar } from '../../lib/foto';
 import { isEnabled, remindersSupported, setEnabled, syncReminders } from '../../lib/pengingat';
 import { supabase } from '../../lib/supabase';
 import { space, useColors } from '../../lib/theme';
@@ -14,6 +16,7 @@ export default function Akun() {
   const user = session?.user;
   const c = useColors();
   const [reminders, setReminders] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     isEnabled().then(setReminders);
@@ -22,6 +25,18 @@ export default function Akun() {
   async function toggle(on: boolean) {
     setReminders(on);
     await setEnabled(on);
+  }
+
+  async function pickPhoto() {
+    if (!user) return;
+    setUploading(true);
+    try {
+      await changeAvatar(user.id);
+    } catch (e) {
+      showAlert('Foto gagal diunggah', (e as Error).message);
+    } finally {
+      setUploading(false);
+    }
   }
 
   function signOut() {
@@ -35,10 +50,33 @@ export default function Akun() {
     <Page title="Akun">
       <Card tone={c.pastelIndigo} onPress={() => router.push('/profil')}>
         <Row style={{ gap: space.md }}>
-          <Avatar name={user?.user_metadata?.full_name || user?.email || ''} size={52} />
+          <Pressable onPress={pickPhoto}>
+            <Avatar name={displayName(user)} uri={avatarOf(user)} size={60} />
+            <View
+              style={{
+                position: 'absolute',
+                right: -2,
+                bottom: -2,
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                backgroundColor: c.accent,
+                borderWidth: 2,
+                borderColor: c.bg,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {uploading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons name="camera" size={12} color="#FFFFFF" />
+              )}
+            </View>
+          </Pressable>
           <View style={{ flex: 1 }}>
-            <T variant="heading">{user?.user_metadata?.full_name || 'Tanpa nama'}</T>
-            <T variant="small">{user?.email}</T>
+            <T variant="heading">{displayName(user) || 'Tanpa nama'}</T>
+            <T variant="small">{user?.email || (user?.phone ? `+${user.phone}` : '')}</T>
           </View>
         </Row>
       </Card>
@@ -88,7 +126,7 @@ export default function Akun() {
         </T>
       </Card>
       <T variant="small" style={{ textAlign: 'center', marginTop: space.md }}>
-        Kreatif 1.0 · tampilan mengikuti mode terang/gelap iPhone
+        Jobsly 1.0 · tampilan mengikuti mode terang/gelap iPhone
       </T>
     </Page>
   );

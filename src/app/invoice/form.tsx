@@ -17,7 +17,7 @@ import {
   Section,
   T,
 } from '../../components/ui';
-import { useAuth } from '../../lib/auth';
+import { displayName, useAuth } from '../../lib/auth';
 import { success } from '../../lib/haptic';
 import {
   getBusiness,
@@ -44,7 +44,7 @@ export default function InvoiceForm() {
   const params = useLocalSearchParams<{ id?: string; project?: string }>();
   const { session } = useAuth();
   const c = useColors();
-  const senderName = session?.user.user_metadata?.full_name || session?.user.email || '';
+  const senderName = displayName(session?.user);
 
   const [id, setId] = useState<string | undefined>(params.id);
   const [number, setNumber] = useState('');

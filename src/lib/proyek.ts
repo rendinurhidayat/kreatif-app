@@ -36,6 +36,11 @@ export type Project = {
   deadline: string | null;
   links: string | null;
   notes: string | null;
+  client_phone: string | null;
+  location: string | null;
+  maps_url: string | null;
+  shoot_time: string | null;
+  shoot_end: string | null;
 };
 
 export type Task = {
@@ -47,7 +52,7 @@ export type Task = {
   done: boolean;
 };
 
-export type Member = { user_id: string; full_name: string | null };
+export type Member = { user_id: string; full_name: string | null; avatar_url: string | null };
 
 // Untuk sekarang satu pengguna memakai satu tim (tim pertama yang diikuti)
 export async function getMyTeam(): Promise<Team | null> {
@@ -59,12 +64,12 @@ export async function getMyTeam(): Promise<Team | null> {
 export async function loadMembers(teamId: string): Promise<Member[]> {
   const { data, error } = await supabase
     .from('team_members')
-    .select('user_id, profiles(full_name)')
+    .select('user_id, profiles(full_name, avatar_url)')
     .eq('team_id', teamId)
     .order('created_at');
   if (error) throw error;
-  return (data ?? []).map((m: any) => ({
-    user_id: m.user_id,
-    full_name: (Array.isArray(m.profiles) ? m.profiles[0] : m.profiles)?.full_name ?? null,
-  }));
+  return (data ?? []).map((m: any) => {
+    const p = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+    return { user_id: m.user_id, full_name: p?.full_name ?? null, avatar_url: p?.avatar_url ?? null };
+  });
 }

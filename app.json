@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Kreatif",
+    "name": "Jobsly",
     "slug": "kreatif-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B0C10",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -23,8 +23,8 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "output": "single",
-      "name": "Kreatif",
-      "shortName": "Kreatif",
+      "name": "Jobsly",
+      "shortName": "Jobsly",
       "lang": "id",
       "bundler": "metro"
     },
@@ -32,8 +32,25 @@
       "expo-router",
       "expo-notifications",
       "expo-sharing",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 140,
+          "resizeMode": "contain",
+          "backgroundColor": "#0B0C10"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Jobsly memakai foto untuk gambar profil.",
+          "cameraPermission": "Jobsly memakai kamera untuk foto profil."
+        }
+      ],
+      "expo-web-browser"
     ],
-    "scheme": "kreatif"
+    "scheme": "jobsly"
   }
 }

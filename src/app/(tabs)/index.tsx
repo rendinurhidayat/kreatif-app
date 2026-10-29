@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { BarChart, DonutChart, LineChart } from '../../components/charts';
 import { Avatar, Card, Empty, ErrorText, ListItem, Pill, Row, SafeTop, Section, Segmented, StatCard, T, useScrolled } from '../../components/ui';
-import { useAuth } from '../../lib/auth';
+import { avatarOf, displayName, useAuth } from '../../lib/auth';
 import { loadDashboard, type Dashboard } from '../../lib/dashboard';
 import { formatDay, monthShort, rupiah } from '../../lib/keuangan';
 import { palette, space, useColors } from '../../lib/theme';
@@ -23,7 +23,7 @@ export default function Beranda() {
   const c = useColors();
   const { scrolled, ...scrollProps } = useScrolled();
   const { session } = useAuth();
-  const name = session?.user.user_metadata?.full_name || session?.user.email?.split('@')[0] || '';
+  const name = displayName(session?.user);
   const [data, setData] = useState<Dashboard | null>(null);
   const [flow, setFlow] = useState<'masuk' | 'keluar'>('masuk');
   const [loading, setLoading] = useState(false);
@@ -83,7 +83,7 @@ export default function Beranda() {
           >
             <Ionicons name="sparkles" size={20} color={c.indigo} />
           </Pressable>
-          <Avatar name={name} onPress={() => router.push('/akun')} />
+          <Avatar name={name} uri={avatarOf(session?.user)} onPress={() => router.push('/akun')} />
         </Row>
       </Row>
 
